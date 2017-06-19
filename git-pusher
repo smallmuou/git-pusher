@@ -103,6 +103,8 @@ elif [ $# -gt 2 ];then
     usage
 fi 
 
+echo remote=$remote
+
 [ ! -d  $path ] && error "$path does not exist. please check."
 
 info "enter $path"
@@ -110,10 +112,10 @@ spushd $path
 git add --all .
 set +e
 git commit -m 'update'
-git push origin master
+git push $remote $branch
 set -e
 spopd 
-info "push done."
+info "done."
 
 
 
