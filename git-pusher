@@ -1,0 +1,117 @@
+#!/bin/bash
+#
+# Copyright (C) 2014 Wenva <lvyexuwenfa100@126.com>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is furnished
+# to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+set -e
+
+spushd() {
+     pushd "$1" 2>&1> /dev/null
+}
+
+spopd() {
+     popd 2>&1> /dev/null
+}
+
+info() {
+     local green="\033[1;32m"
+     local normal="\033[0m"
+     echo -e "[${green}INFO${normal}] $1"
+}
+
+error() {
+     local red="\033[1;31m"
+     local normal="\033[0m"
+     echo -e "[${red}ERROR${normal}] $1"
+}
+
+# 获取当前目录
+current_dir() {
+    if [ ${0:0:1} = '/' ] || [ ${0:0:1} = '~' ]; then
+        echo "$(dirname $0)"
+    else
+        echo "`pwd`/$(dirname $0)"
+    fi
+}
+
+usage() {
+cat << EOF
+
+USAGE: $0 [-h] path [remote [branch]]
+
+DESCRIPTION:
+    This script use to simplify git push. 
+
+    path - the top path of you project
+    remote - the remote name of repository, default is origin
+    branch - the branch of repository, default is master
+
+OPTIONS:
+    -h                Show this help message and exit
+
+EOF
+exit
+}
+
+while getopts 'h' arg; do
+    case $arg in
+        h)
+            usage;;
+        ?)
+            usage;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+remote=origin
+branch=master
+path=
+
+# parse first arg
+if [ $# -eq 0 ];then
+    usage
+fi
+path=$1
+
+shift 1
+
+# parse other arg
+if [ $# -eq 1 ];then
+    remote=$1
+elif [ $# -eq 2 ];then
+    remote=$1
+    branch=$2
+elif [ $# -gt 2 ];then
+    usage
+fi 
+
+[ ! -d  $path ] && error "$path does not exist. please check."
+
+info "enter $path"
+spushd $path
+git add --all .
+git commit -m 'update'
+git push origin master
+spopd 
+info "push done."
+
+
+
