@@ -111,6 +111,7 @@ git add --all .
 set +e
 git commit -m 'update'
 git push origin master
+set -e
 spopd 
 info "push done."
 
