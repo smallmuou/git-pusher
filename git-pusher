@@ -103,8 +103,6 @@ elif [ $# -gt 2 ];then
     usage
 fi 
 
-echo remote=$remote
-
 [ ! -d  $path ] && error "$path does not exist. please check."
 
 info "enter $path"
