@@ -54,7 +54,7 @@ current_dir() {
 usage() {
 cat << EOF
 
-USAGE: $0 [-h] path [remote [branch]]
+USAGE: $0 [OPTIONS] path [remote [branch]]
 
 DESCRIPTION:
     This script use to simplify git push. 
@@ -64,22 +64,30 @@ DESCRIPTION:
     branch - the branch of repository, default is master
 
 OPTIONS:
-    -h                Show this help message and exit
+    -h          Show this help message and exit
+    -m          Assign commit message.
 
 EOF
 exit
 }
 
-while getopts 'h' arg; do
+message='update'
+
+while getopts 'hm:' arg; do
     case $arg in
         h)
             usage;;
+        m)
+            message=$OPTARG
+            ;;
         ?)
             usage;;
     esac
 done
 
 shift $(($OPTIND - 1))
+
+echo $message
 
 remote=origin
 branch=master
@@ -109,7 +117,7 @@ info "enter $path"
 spushd $path
 git add --all .
 set +e
-git commit -m 'update'
+git commit -m "$message"
 git push $remote $branch
 set -e
 spopd 
