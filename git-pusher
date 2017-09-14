@@ -87,8 +87,6 @@ done
 
 shift $(($OPTIND - 1))
 
-echo $message
-
 remote=origin
 branch=master
 path=
